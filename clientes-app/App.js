@@ -1,11 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from "react";
+import { StyleSheet, Text, View,  ActivityIndicator,SafeAreaView, FlatList } from 'react-native';
+import { getAllClients } from './lib/restClient.js'; // Adjust the path as necessary
 
 export default function App() {
+
+
+  const [clientes, setClientes] = useState([]);
+
+  useEffect(() => {
+    getAllClients().then((data) => {
+      setClientes(data);
+    });
+    console.log("Clientes:", clientes);
+  }, []);
+
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text></Text>
       <StatusBar style="auto" />
+
+      <SafeAreaView>
+        {clientes.length === 0 ? (
+          <ActivityIndicator size={"large"} />
+        ) : (
+          <FlatList
+            data={clientes}
+            keyExtractor={(item) => item.correo}
+            renderItem={({ item }) => (
+              <View>
+                <Text>{item.nombre}</Text>
+                <Text>{item.apellido}</Text>
+              </View>
+            )}
+          />
+        )}
+      </SafeAreaView>
     </View>
   );
 }
